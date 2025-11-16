@@ -1,6 +1,8 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import List
 
 app = FastAPI()
 
@@ -12,13 +14,56 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+class WorklistItem(BaseModel):
+    name: str
+    id: str
+    modality: str
+    study: str
+    accession: str
+    status: str
+
+
 @app.get("/")
 def read_root():
     return {"message": "Hello from FastAPI Backend!"}
 
+
 @app.get("/api/hello")
 def hello():
     return {"message": "Hello from the backend API!"}
+
+
+@app.get("/api/worklist", response_model=List[WorklistItem])
+def get_worklist():
+    # Sample data; can be replaced with database query later
+    return [
+        WorklistItem(
+            name="Budi Santoso",
+            id="PID-001245",
+            modality="CT",
+            study="Head CT w/ Contrast",
+            accession="ACC-2025-0001",
+            status="Scheduled",
+        ),
+        WorklistItem(
+            name="Siti Aminah",
+            id="PID-001246",
+            modality="MR",
+            study="Brain MRI",
+            accession="ACC-2025-0002",
+            status="In Progress",
+        ),
+        WorklistItem(
+            name="Andi Wijaya",
+            id="PID-001247",
+            modality="CR",
+            study="Chest X-Ray",
+            accession="ACC-2025-0003",
+            status="Completed",
+        ),
+    ]
+
 
 @app.get("/test")
 def test_database():
